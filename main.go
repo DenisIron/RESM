@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 var st []int
 var (
-	resour = []string{"r1", "r2", "r3"}
+	resour      = []string{"r1", "r2", "r3"} //слайс содержащий неиспользуемые ресурсы
+	clientResor = [][]string{}               //слайс слайсов содержащий данные клиент-ресурс
 )
 
 func main() {
@@ -40,27 +42,39 @@ func resources(r *http.Request) {
 	default:
 		BadRequest()
 	}
-}
-*/
+}*/
+
 func allocate(w http.ResponseWriter, r *http.Request) {
 	//если localhost:80/allocate/alice то есть Path(2: по /), то берется 1 ресурс клиенту
 	/*	if len(resourDealloc) != 0 {
 			res := resourDealloc[0]
 			resourDealloc[0] = ""
 			clientResor = res
-			//прописать логику
 		} else {
 			fmt.Println("Out of resources")
 		}*/
 	//s := append(st, 3)
 	w.Write([]byte("Resources Manager - RESM\n"))
 	path := r.URL.Path[1:]
-	fmt.Fprintf(w, "Команда: %s!\n", path)
-	fmt.Fprintf(w, string(resour[0]))
-	s := append(resour, "2")
-	fmt.Fprintf(w, string(s[3]))
-	resour[0] = ""
-	fmt.Fprintf(w, string(resour[0]))
+	//fmt.Fprintf(w, "Команда: %s!\n", path)
+
+	/*for i := range dd {
+		fmt.Fprintf(w, string(dd[i]))
+		if string(dd[i]) == "/" {
+			client := strings.Split(string(dd), "/")
+			fmt.Fprintf(w, client[1])
+			break
+		}
+	}*/
+	allPath := []byte(path)
+	client := strings.Split(string(allPath), "/")
+	fmt.Fprintf(w, client[1])
+	//resour := append(resour, "rN")
+
+	for i := range resour {
+		fmt.Fprintf(w, "\n")
+		fmt.Fprintf(w, string(resour[i]))
+	}
 
 }
 
@@ -70,9 +84,23 @@ func deallocate(d http.ResponseWriter, r *http.Request) {
 	}
 	clientResor = [][]string{}*/
 	//localhost:8080/deallocate/r1 то в канал добавляется r1
-	w.Write([]byte("Resources Manager - RESM\n"))
+	d.Write([]byte("Resources Manager - RESM\n"))
 	path := r.URL.Path[1:]
-	fmt.Fprintf(w, "Команда: %s!\n", path)
+	fmt.Fprintf(d, "Команда: %s!\n", path)
+
+	for i := range resour {
+		if resour[i] != "" {
+			resour[i] = ""
+			resour = resour[i:]
+			break
+		}
+	}
+	for i := range resour {
+		fmt.Fprintf(d, "\n")
+		fmt.Fprintf(d, string(resour[i]))
+	}
+	//n := len(resour)
+	//fmt.Fprintf(d, string(resour[i]))
 
 }
 
@@ -80,7 +108,14 @@ func deallocate(d http.ResponseWriter, r *http.Request) {
 func list(l http.ResponseWriter, r *http.Request) {
 	// "allocated":{"r1":"alice"}, "deallocated":["r2","r3"]
 	//	fmt.Fprintf("allocaetd: {%s}, deallocated: %d\n", clientResor, resourDealloc)*/
-	fmt.Fprintf(l, "list")
+	l.Write([]byte("Resources Manager - RESM\n"))
+	path := r.URL.Path[1:]
+	fmt.Fprintf(l, "Команда: %s!\n", path)
+
+	for i := range resour {
+		fmt.Fprintf(l, "\n")
+		fmt.Fprintf(l, string(resour[i]))
+	}
 }
 
 func reset(res http.ResponseWriter, r *http.Request) {
@@ -91,6 +126,13 @@ func reset(res http.ResponseWriter, r *http.Request) {
 	}*/
 	fmt.Fprintf(res, "reset")
 }
+
+/*
+func head() {
+	w.Write([]byte("Resources Manager - RESM\n"))
+	path := r.URL.Path[1:]
+	fmt.Fprintf(w, "Команда: %s!\n", path)
+}*/
 
 /*
 func BadRequest() {
