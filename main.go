@@ -12,6 +12,10 @@ var (
 	clientResor = [][]string{}               //слайс слайсов содержащий данные клиент-ресурс
 )
 
+type data struct { //Структура для хранения данных клинет-ресурс
+	res, client string
+}
+
 func main() {
 	http.HandleFunc("/allocate/", allocate)
 	http.HandleFunc("/deallocate/", deallocate)
@@ -67,8 +71,16 @@ func allocate(w http.ResponseWriter, r *http.Request) {
 		}
 	}*/
 	allPath := []byte(path)
-	client := strings.Split(string(allPath), "/")
-	fmt.Fprintf(w, client[1])
+	client := strings.Split(string(allPath), "/")[1] //Имя клиента
+	fmt.Fprintf(w, client)
+	dat := data{}
+	dat.res = string(resour[0]) //Добавляем в базу данные об используемом ресурсе
+	dat.client = client         //Добавляем в базу данные о клиенте
+	fmt.Fprintf(w, dat.res)
+	//clientResor := append(clientResor[][], client)
+	//clientResor[0][1] = resour[0]
+	//fmt.Fprintf(w, clientResor[0][0])
+	//fmt.Fprintf(w, clientResor[0][1])
 	//resour := append(resour, "rN")
 
 	for i := range resour {
