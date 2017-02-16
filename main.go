@@ -3,10 +3,11 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strings"
+	//"strings"
+	"Resm"
 )
 
-//type data struct { //Структура для хранения данных клинет-ресурс
+//type data struct {
 //	res    string
 //	client string
 //}
@@ -16,86 +17,100 @@ var (
 )
 
 func main() {
-	http.HandleFunc("/", Server)
+	http.HandleFunc("/", resm.Server)
 	http.ListenAndServe(":9000", nil)
 }
 
-func Server(w http.ResponseWriter, r *http.Request) {
-	var (
-		resources = []string{"r1", "r2", "r3", "r4", "r5"} //slice, содержащий неиспользуемые ресурсы
-		//dat    = data{}
-	)
-	//clientRes := make(map[string]string)
+//func Server(w http.ResponseWriter, r *http.Request) {
+//	var (
+//		resources = []string{"r1", "r2", "r3", "r4", "r5"} //slice, содержащий все ресурсы
+//		//dat    = data{}
+//	)
+//	//clientRes := make(map[string]string)
+//
+//	request := strings.Split(r.URL.Path[1:], "/")
+//	switch request[0] {
+//	case "allocate":
+//		client := request[1] //Имя клиента
+//		//allocateHand(resources, &clientRes, client,  w)//   (resourDealloc, clientResor)
+//		for i := range resources {
+//			if clientRes[resources[i]] == "" {
+//				clientRes[resources[i]] = client
+//				break
+//			}
+//		}
+//		for i := range resources {
+//			fmt.Fprintf(w, clientRes[resources[i]])
+//			fmt.Fprintf(w, "\n")
+//		}
+//
+//	case "deallocate":
+//		//deallocateHand(resources, w)
+//		resForDealloc := request[1] // Ресурс, который необходимо изъять у клиента
+//		for key, value := range clientRes {
+//			if key == resForDealloc {
+//				delete(clientRes, key)
+//				break
+//			}
+//			delete(clientRes, resForDealloc)
+//			fmt.Fprintf(w, "'%v':'%v' ", key, value)
+//		}
+//		for range resources {
+//			if clientRes[resForDealloc] != "" {
+//				clientRes[resForDealloc] = ""
+//				break
+//			}
+//		}
+//		for i := range resources {
+//			fmt.Fprintf(w, clientRes[resources[i]])
+//			fmt.Fprintf(w, "\n")
+//		}
+//
+//	case "list":
+//		list(resources, w)
+//
+//	case "reset":
+//		//reset(resources, clientRes, w)
+//		for key, value := range clientRes {
+//			delete(clientRes, key)
+//			fmt.Fprintf(w, "'%v':'%v' ", key, value)
+//		}
+//
+//	default:
+//		badRequest(w)
+//	}
+//}
 
-	request := strings.Split(r.URL.Path[1:], "/")
-	switch request[0] {
-	case "allocate":
-		client := request[1] //Имя клиента
-		//allocateHand(resources, w)//   (resourDealloc, clientResor)
-		for i := range resources {
-			if clientRes[resources[i]] == "" {
-				clientRes[resources[i]] = client
-				break
-			}
-		}
-		for i := range resources {
-			fmt.Fprintf(w, clientRes[resources[i]])
-			fmt.Fprintf(w, "\n")
-		}
+//func allocateHand(resources []string, clientRes *map[string]string, client string,  w http.ResponseWriter) {
+//	fmt.Fprintf(w, "\n")
+//}
 
-	case "deallocate":
-		//deallocateHand(resources, w) //
+//func deallocateHand(resour []string, w http.ResponseWriter) {
+//	fmt.Fprintf(w, resour[1])
+//}
 
-		resForDealloc := request[1] // Ресурс, который необходимо изъять у клиента
-		for range resources {
-			if clientRes[resForDealloc] != "" {
-				clientRes[resForDealloc] = ""
-				break
-			}
-		}
-		for i := range resources {
-			fmt.Fprintf(w, clientRes[resources[i]])
-			fmt.Fprintf(w, "\n")
-		}
+func list(resources []string, w http.ResponseWriter) {
+	fmt.Fprintf(w, "'allocated': ")
+	for key, value := range clientRes {
+		fmt.Fprintf(w, "'%v':'%v' ", key, value)
+	}
 
-	case "list":
-		fmt.Fprintf(w, "'allocated'")
-		for key, value := range clientRes {
-			fmt.Fprintf(w, "Key:", key, "Value:", value)
+	fmt.Fprintf(w, " 'deallocated': ")
+	for i := range resources {
+		if clientRes[resources[i]] == "" {
+			fmt.Fprintf(w, "'%s' ", resources[i])
 		}
-		fmt.Fprintf(w, " 'deallocated': ")
-		for i := range resources {
-			if clientRes[resources[i]] != "" {
-				fmt.Fprintf(w, "'%s' ", resources[i])
-			}
-		}
-	//list(resources, w) //  (clientResor, resourDealloc)
-
-	case "reset":
-		for i := range resources {
-			clientRes[resources[i]] = ""
-		}
-	//reset(resources, w) //  (clientResor, chResourDealloc)
-
-	default:
-		badRequest(w)
 	}
 }
 
-func allocateHand(resour []string, w http.ResponseWriter) {
-	fmt.Fprintf(w, resour[0])
-}
-
-func deallocateHand(resour []string, w http.ResponseWriter) {
-	fmt.Fprintf(w, resour[1])
-}
-
-func list(resour []string, w http.ResponseWriter) {
-	fmt.Fprintf(w, resour[2])
-}
-
-func reset(resour []string, w http.ResponseWriter) {
-	fmt.Fprintf(w, resour[3])
+func reset(resources []string, clientRes map[string]string, w http.ResponseWriter) {
+	for i := range resources {
+		delete(clientRes, resources[i])
+	}
+	for i := range resources {
+		fmt.Fprintf(w, clientRes[resources[i]])
+		fmt.Fprintf(w, "\n")
+	}
 }
 
 func badRequest(w http.ResponseWriter) {
@@ -111,62 +126,62 @@ func resources(r *http.Request) {
 	)
 }*/
 
-func allocateHandle(w http.ResponseWriter, r *http.Request) {
-	//если localhost:9000/allocate/alice то есть Path(2: по /), то берется 1 ресурс клиенту
-	/*	if len(resourDealloc) != 0 {
-			res := resourDealloc[0]
-			resourDealloc[0] = ""
-			clientResor = res
-		} else {
-			fmt.Println("Out of resources")
-		}*/
-	//s := append(st, 3)
-	w.Write([]byte("Resources Manager - RESM\n"))
-	/*for i := range dd {
-		fmt.Fprintf(w, string(dd[i]))
-		if string(dd[i]) == "/" {
-			client := strings.Split(string(dd), "/")
-			fmt.Fprintf(w, client[1])
-			break
-		}
+//func allocateHandle(w http.ResponseWriter, r *http.Request) {
+//если localhost:9000/allocate/alice то есть Path(2: по /), то берется 1 ресурс клиенту
+/*	if len(resourDealloc) != 0 {
+		res := resourDealloc[0]
+		resourDealloc[0] = ""
+		clientResor = res
+	} else {
+		fmt.Println("Out of resources")
 	}*/
-	//dat := data{}
-	client := strings.Split(r.URL.Path[1:], "/")[1] //Имя клиента
-	//dat[0].client = client //Добавляем в базу данные о клиенте
-	fmt.Fprintf(w, client) // dat[0].client)
-	//resour[0] = ""
+//s := append(st, 3)
+//w.Write([]byte("Resources Manager - RESM\n"))
+/*for i := range dd {
+	fmt.Fprintf(w, string(dd[i]))
+	if string(dd[i]) == "/" {
+		client := strings.Split(string(dd), "/")
+		fmt.Fprintf(w, client[1])
+		break
+	}
+}*/
+//dat := data{}
+//client := strings.Split(r.URL.Path[1:], "/")[1] //Имя клиента
+//dat[0].client = client //Добавляем в базу данные о клиенте
+//fmt.Fprintf(w, client) // dat[0].client)
+//resour[0] = ""
 
-	//clientResor := append(clientResor[][], client)
-	//clientResor[0][1] = resour[0]
-	//fmt.Fprintf(w, clientResor[0][0])
-	//fmt.Fprintf(w, clientResor[0][1])
-	//resour := append(resour, "rN")
+//clientResor := append(clientResor[][], client)
+//clientResor[0][1] = resour[0]
+//fmt.Fprintf(w, clientResor[0][0])
+//fmt.Fprintf(w, clientResor[0][1])
+//resour := append(resour, "rN")
 
-	//for i := range resour {
-	//	if resour[i] != "" {
+//for i := range resour {
+//	if resour[i] != "" {
 
-	//		resour[i] = ""
-	//		resour = resour[i:]
-	//		break
-	//	}
-	//}
-	//for i := range resour {
-	//	fmt.Fprintf(w, "%s\n", string(resour[i]))
-	//}
+//		resour[i] = ""
+//		resour = resour[i:]
+//		break
+//	}
+//}
+//for i := range resour {
+//	fmt.Fprintf(w, "%s\n", string(resour[i]))
+//}
 
-	//Обработка отсутствия ресурсов:
-	//для тестирования: resour = []string{"", "", ""}
-	//count := 0
-	//for i := range resour {
-	//	if resour[i] != "" {
-	//		break
-	//	}
-	//	count++
-	//}
-	//if count == len(resour) {
-	//	fmt.Fprintf(w, "Out of resource")
-	//}
-}
+//Обработка отсутствия ресурсов:
+//для тестирования: resour = []string{"", "", ""}
+//count := 0
+//for i := range resour {
+//	if resour[i] != "" {
+//		break
+//	}
+//	count++
+//}
+//if count == len(resour) {
+//	fmt.Fprintf(w, "Out of resource")
+//}
+//}
 
 //func deallocate(d http.ResponseWriter, r *http.Request) {
 //	//clientResor = [][]string{}
