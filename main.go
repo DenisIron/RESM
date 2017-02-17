@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"net/http"
 	//"strings"
-	"Resm"
+	"Resmang"
 )
 
 //type data struct {
@@ -12,9 +12,9 @@ import (
 //	client string
 //}
 
-var (
-	clientRes = make(map[string]string)
-)
+//var (
+//	clientRes = make(map[string]string)
+//)
 
 func main() {
 	http.HandleFunc("/", resm.Server)
@@ -88,34 +88,34 @@ func main() {
 //func deallocateHand(resour []string, w http.ResponseWriter) {
 //	fmt.Fprintf(w, resour[1])
 //}
-
-func list(resources []string, w http.ResponseWriter) {
-	fmt.Fprintf(w, "'allocated': ")
-	for key, value := range clientRes {
-		fmt.Fprintf(w, "'%v':'%v' ", key, value)
-	}
-
-	fmt.Fprintf(w, " 'deallocated': ")
-	for i := range resources {
-		if clientRes[resources[i]] == "" {
-			fmt.Fprintf(w, "'%s' ", resources[i])
-		}
-	}
-}
-
-func reset(resources []string, clientRes map[string]string, w http.ResponseWriter) {
-	for i := range resources {
-		delete(clientRes, resources[i])
-	}
-	for i := range resources {
-		fmt.Fprintf(w, clientRes[resources[i]])
-		fmt.Fprintf(w, "\n")
-	}
-}
-
-func badRequest(w http.ResponseWriter) {
-	w.Write([]byte("Bad Request")) //Неверный запрос
-}
+//
+//func list(resources []string, w http.ResponseWriter) {
+//	fmt.Fprintf(w, "'allocated': ")
+//	for key, value := range clientRes {
+//		fmt.Fprintf(w, "'%v':'%v' ", key, value)
+//	}
+//
+//	fmt.Fprintf(w, " 'deallocated': ")
+//	for i := range resources {
+//		if clientRes[resources[i]] == "" {
+//			fmt.Fprintf(w, "'%s' ", resources[i])
+//		}
+//	}
+//}
+//
+//func reset(resources []string, clientRes map[string]string, w http.ResponseWriter) {
+//	for i := range resources {
+//		delete(clientRes, resources[i])
+//	}
+//	for i := range resources {
+//		fmt.Fprintf(w, clientRes[resources[i]])
+//		fmt.Fprintf(w, "\n")
+//	}
+//}
+//
+//func badRequest(w http.ResponseWriter) {
+//	w.Write([]byte("Bad Request")) //Неверный запрос
+//}
 
 /*
 func resources(r *http.Request) {
