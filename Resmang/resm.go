@@ -6,84 +6,84 @@ import (
 	"strings"
 )
 
-var (
-	clientRes = make(map[string]string)
-)
-
-type clientRes2 struct{
-	resources2 []string
- 	clientResMap2 map[string]string
+type ClientRes struct{
+	Resources []string
+	ClientResMap map[string]string
 }
 
 func Server(w http.ResponseWriter, r *http.Request) {
-	var (
-		resources = []string{"r1", "r2", "r3", "r4", "r5"} //slice, содержащий все ресурсы
-	)
+	struc := ClientRes{}
+	struc.Resources = []string{"r1", "r2", "r3", "r4", "r5"} //slice, содержащий все ресурсы
+	struc.ClientResMap = map[string]string{}
+
 	//clientRes.fillingSliceOfRes()
 	request := strings.Split(r.URL.Path[1:], "/")
 	switch request[0] {
 	case "allocate":
-		client := request[1] //Имя клиента
-		//allocateHand(resources, client,  w)//   (resourDealloc, clientResor)
-/*
-clientRes.allocate(client,  w)
-*/
-		count := 0
-		for i := range resources {
-			if clientRes[resources[i]] == "" {
-				clientRes[resources[i]] = client
-				break
-			} else {count++ }
-		}
-		if count == len(resources){
+		client := request[1]
+		statusBool := struc.Allocate(client)
+		if !statusBool {
 			fmt.Fprintf(w, "Out of resource")
 		}
 
 	case "deallocate":
-		//deallocateHand(resources, w)
 		resForDealloc := request[1] // Ресурс, который необходимо изъять у клиента
-		count := 0
-
-		for range resources {
-			if clientRes[resForDealloc] != "" {
-				delete(clientRes, clientRes[resForDealloc])
-				break
-			} else {
-				count++
-			}
-		}
-		//for key:= range clientRes {
-		//	if key == resForDealloc {
-		//		delete(clientRes, key)
-		//		break
-		//	} else {count++ }
-		//}
-		if count == len(resources){
+		statusBool := struc.Deallocate(resForDealloc)
+		if !statusBool {
 			fmt.Fprintf(w, "Not allocated")
 		}
 
-		//for range resources {
-		//	if clientRes[resForDealloc] != "" {
-		//		delete(clientRes, clientRes[resForDealloc])
-		//		break
-		//	}
-		//}
-
 	case "list":
-		list(resources, clientRes, w)
+		//	list()
+		fmt.Fprintf(w, "'allocated': ")
+		for key, value := range struc.ClientResMap {
+			fmt.Fprintf(w,"'%v':'%v' ", key, value)
+		}
+
+		fmt.Fprintf(w, " 'deallocated': ")
+		for i := range struc.Resources {
+			if struc.ClientResMap[struc.Resources[i]] == "" {
+				fmt.Fprintf(w, "'%s' ", struc.Resources[i])
+			}
+		}
 
 	case "reset":
-		reset(resources, clientRes, w)
+		struc.Reset()
 
 	default:
-		badRequest(w)
+		w.Write([]byte("Bad Request"))
 	}
 }
 
-func list(resources []string, clientRes map[string]string, w http.ResponseWriter) {
+func (Struc *ClientRes) Allocate(client string) bool {
+	for i := range Struc.Resources {
+		if Struc.ClientResMap[Struc.Resources[i]] == "" {
+			Struc.ClientResMap[Struc.Resources[i]] = client
+			return true
+		}
+	}
+	return false
+}
+
+func (Struc *ClientRes) Deallocate(resForDealloc string) bool {
+	if Struc.ClientResMap[resForDealloc] != "" {
+		delete(Struc.ClientResMap, resForDealloc)
+		return true
+	} else {
+		return false
+	}
+}
+
+func (Struc *ClientRes) Reset() {
+	for keyResources := range Struc.ClientResMap {
+		delete(Struc.ClientResMap, keyResources)
+	}
+}
+/*
+func list() {
 	fmt.Fprintf(w, "'allocated': ")
 	for key, value := range clientRes {
-		fmt.Fprintf(w,"'%v':'%v' ", key, value)
+		//fmt.Fprintf(w,"'%v':'%v' ", key, value)
 	}
 
 	fmt.Fprintf(w, " 'deallocated': ")
@@ -93,27 +93,16 @@ func list(resources []string, clientRes map[string]string, w http.ResponseWriter
 		}
 	}
 }
-
-func reset(resources []string, clientRes map[string]string, w http.ResponseWriter) {
-	for key := range clientRes {
-		delete(clientRes, key)
-	}
-	//fmt.Fprintf(w, "RESET")
-}
-
-func badRequest(w http.ResponseWriter) {
-	w.Write([]byte("Bad Request")) //Неверный запрос
-}
-
-//func (res *clientRes2) fillingSliceOfRes(){
-//	res.resources2 = []string{"r1", "r2", "r3", "r4", "r5"}
+*/
+//func (res *clientRes) fillingSliceOfRes(){
+//	res.resources = []string{"r1", "r2", "r3", "r4", "r5"}
 //}
 
-//func allocateHand(resources []string, client string,  w http.ResponseWriter) {
+//func allocate(resources []string, client string,  w http.ResponseWriter) {
 //	fmt.Fprintf(w, "\n")
 //}
 /*
-func (clientRes *clientRes) allocateHand(client string,  w http.ResponseWriter) {
+func (clientRes *clientRes) allocate(client string,  w http.ResponseWriter) {
 	count := 0
 	for i := range clientRes.resources {
 		if clientRes.clientRes[resources[i]] == "" {
@@ -128,6 +117,6 @@ func (clientRes *clientRes) allocateHand(client string,  w http.ResponseWriter) 
 }
 */
 
-//func deallocateHand(resour []string, w http.ResponseWriter) {
+//func deallocate(resour []string, w http.ResponseWriter) {
 
 //}
